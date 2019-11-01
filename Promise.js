@@ -21,8 +21,13 @@ class MyPromise {
 
     then(handler) {
         if (this.state === state.FULFILLED) {
-            return new MyPromise(resolve => {
-                resolve(handler(this.result));
+            return new MyPromise((resolve, reject) => {
+                try {
+                    resolve(handler(this.result));
+                } catch(err) {
+                    reject(err);
+                }
+
             });
         }
         return this.wrapCB(handler);
@@ -30,8 +35,12 @@ class MyPromise {
 
     catch(handler) {
         if (this.state === state.REJECTED) {
-            return new MyPromise(resolve => {
-                resolve(handler());
+            return new MyPromise((resolve, reject) => {
+                try {
+                    resolve(handler(this.result));
+                } catch (err) {
+                    reject(err);
+                }
             });
         }
         return this.wrapCB(handler, true);
@@ -112,5 +121,31 @@ class MyPromise {
         }
     }
 }
+
+MyPromise.resolve = function(val) {
+    return new MyPromise((resolve) => {
+        resolve(val);
+    });
+};
+
+MyPromise.reject = function(err) {
+    return new MyPromise((_, reject) => {
+        reject(err);
+    });
+};
+
+// MyPromise.all = function(arr) {
+//     if (!Array.isArray(arr)) {
+//         throw new Error('Promise.all should ')
+//     }
+//     return new MyPromise(resolve, reject) => {
+//         try {
+//             if (arr)
+//         } catch (err) {
+//             reject(err);
+//         }
+//     }
+// };
+
 
 module.exports = MyPromise;
